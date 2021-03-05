@@ -43,7 +43,6 @@
 int main(void) {
     struct sps30_measurement m;
     char serial[SPS30_MAX_SERIAL_LEN];
-    const uint8_t AUTO_CLEAN_DAYS = 4;
     int16_t ret;
 
     while (sensirion_uart_open() != 0) {
@@ -79,9 +78,6 @@ int main(void) {
     else
         printf("SPS30 Serial: %s\n", serial);
 
-    ret = sps30_set_fan_auto_cleaning_interval_days(AUTO_CLEAN_DAYS);
-    if (ret)
-        printf("error %d setting the auto-clean interval\n", ret);
 
     while (1) {
         ret = sps30_start_measurement();
