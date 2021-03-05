@@ -46,25 +46,25 @@ int main(void) {
     int16_t ret;
 
     while (sensirion_uart_open() != 0) {
-        printf("UART init failed\n");
+        printf("ERROR sensirion_uart_open\n");
         sensirion_sleep_usec(1000000); /* sleep for 1s */
     }
 
     /* Busy loop for initialization, because the main loop does not work without
      * a sensor.
      */
+    printf("SEND sps30_probe\n");
     while (sps30_probe() != 0) {
-        printf("SPS30 sensor probing failed\n");
+        printf("ERROR sps30_probe\n");
         sensirion_sleep_usec(1000000); /* sleep for 1s */
     }
-    printf("SPS30 sensor probing successful\n");
 
     struct sps30_version_information version_information;
     ret = sps30_read_version(&version_information);
     if (ret) {
-        printf("error %d reading version information\n", ret);
+        printf("ERROR (%d) sps30_read_version\n", ret);
     } else {
-        printf("FW: %u.%u HW: %u, SHDLC: %u.%u\n",
+        printf("sps30_read_version FW: %u.%u HW: %u, SHDLC: %u.%u\n",
                version_information.firmware_major,
                version_information.firmware_minor,
                version_information.hardware_revision,
@@ -74,28 +74,29 @@ int main(void) {
 
     ret = sps30_get_serial(serial);
     if (ret)
-        printf("error %d reading serial\n", ret);
+        printf("ERROR (%d) sps30_get_serial\n", ret);
     else
-        printf("SPS30 Serial: %s\n", serial);
+        printf("sps30_get_serial \"%s\"\n", serial);
 
 
     while (1) {
+
+        printf("SEND sps30_start_measurement\n");
         ret = sps30_start_measurement();
         if (ret < 0) {
-            printf("error starting measurement\n");
+            printf("ERROR (%d) sps30_start_measurement\n", ret);
         }
-
-        printf("measurements started\n");
 
         for (int i = 0; i < 60; ++i) {
 
+            // printf("SEND sps30_read_measurement\n");
             ret = sps30_read_measurement(&m);
             if (ret < 0) {
-                printf("error reading measurement\n");
+                printf("ERROR (%d) sps30_read_measurement\n", ret);
             } else {
                 if (SPS30_IS_ERR_STATE(ret)) {
                     printf(
-                        "Chip state: %u - measurements may not be accurate\n",
+                        "ERROR Chip state %u - measurements may not be accurate\n",
                         SPS30_GET_ERR_STATE(ret));
                 }
 
@@ -117,36 +118,37 @@ int main(void) {
             sensirion_sleep_usec(1000000); /* sleep for 1s */
         }
 
-        /* Stop measurement for 1min to preserve power. Also enter sleep mode
-         * if the firmware version is >=2.0.
-         */
+        printf("SEND sps30_stop_measurement\n");
         ret = sps30_stop_measurement();
         if (ret) {
-            printf("Stopping measurement failed\n");
+            printf("ERROR (%d) sps30_stop_measurement\n", ret);
         }
 
         if (version_information.firmware_major >= 2) {
+            printf("SEND sps30_sleep\n");
             ret = sps30_sleep();
             if (ret) {
-                printf("Entering sleep failed\n");
+                printf("ERROR (%d) sps30_sleep\n", ret);
             }
         }
 
-        printf("No measurements for 1 minute\n");
+        printf("sleep for 60 seconds\n");
         sensirion_sleep_usec(1000000 * 60);
 
         if (version_information.firmware_major >= 2) {
+            printf("SEND sps30_wake_up\n");
             ret = sps30_wake_up();
             if (ret) {
-                printf("Error %i waking up sensor\n", ret);
+                printf("ERROR (%d) sps30_wake_up\n", ret);
             }
         }
     }
 
+    printf("SEND sps30_stop_measurement\n");
     sps30_stop_measurement();
 
     if (sensirion_uart_close() != 0)
-        printf("failed to close UART\n");
+        printf("ERROR sensirion_uart_close\n");
 
     return 0;
 }
