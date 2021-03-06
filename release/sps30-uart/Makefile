@@ -2,12 +2,17 @@
 -include user_config.inc
 include default_config.inc
 
-.PHONY: all clean
+EXE = sps30_example_usage
 
-all: sps30_example_usage
+.PHONY: all clean run
 
-sps30_example_usage: clean
-	$(CC) $(CFLAGS) -o $@ ${sps30_uart_sources} ${uart_sources} ${sps30_uart_dir}/sps30_example_usage.c
+all : ${EXE}
+
+run : ${EXE}
+	./${EXE}
+
+${EXE} : clean
+	$(CC) $(CFLAGS) -o $@ ${sps30_uart_sources} ${uart_sources} ${sps30_uart_dir}/${EXE}.c
 
 clean:
-	$(RM) sps30_example_usage
+	$(RM) ${EXE}
