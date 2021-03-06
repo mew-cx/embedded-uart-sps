@@ -41,8 +41,6 @@
 //#define printf(...)
 
 int main(void) {
-    struct sps30_measurement m;
-    char serial[SPS30_MAX_SERIAL_LEN];
     int16_t ret;
 
     while (sensirion_uart_open() != 0) {
@@ -72,6 +70,7 @@ int main(void) {
                version_information.shdlc_minor);
     }
 
+    char serial[SPS30_MAX_SERIAL_LEN];
     ret = sps30_get_serial(serial);
     if (ret)
         printf("ERROR (%d) sps30_get_serial\n", ret);
@@ -91,6 +90,7 @@ int main(void) {
         for (int i = 0; i < 20; ++i) {
 
             // printf("SEND sps30_read_measurement\n");
+            struct sps30_measurement m;
             ret = sps30_read_measurement(&m);
             if (ret < 0) {
                 printf("ERROR (%d) sps30_read_measurement\n", ret);
