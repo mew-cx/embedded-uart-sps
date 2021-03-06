@@ -78,7 +78,6 @@ int main(void) {
     else
         printf("sps30_get_serial \"%s\"\n", serial);
 
-
     while (1) {
 
         printf("SEND sps30_start_measurement\n");
@@ -86,6 +85,8 @@ int main(void) {
         if (ret < 0) {
             printf("ERROR (%d) sps30_start_measurement\n", ret);
         }
+
+        printf("measured values:\n" "pm1.0" "\tpm2.5" "\tpm4.0" "\tpm10.0" "\tnc0.5" "\tnc1.0" "\tnc2.5" "\tnc4.5" "\tnc10.0" "\tsize\n");
 
         for (int i = 0; i < 20; ++i) {
 
@@ -100,21 +101,12 @@ int main(void) {
                         SPS30_GET_ERR_STATE(ret));
                 }
 
-                printf("measured values:\n"
-                       "\t%0.2f pm1.0\n"
-                       "\t%0.2f pm2.5\n"
-                       "\t%0.2f pm4.0\n"
-                       "\t%0.2f pm10.0\n"
-                       "\t%0.2f nc0.5\n"
-                       "\t%0.2f nc1.0\n"
-                       "\t%0.2f nc2.5\n"
-                       "\t%0.2f nc4.5\n"
-                       "\t%0.2f nc10.0\n"
-                       "\t%0.2f typical particle size\n\n",
-                       m.mc_1p0, m.mc_2p5, m.mc_4p0, m.mc_10p0, m.nc_0p5,
-                       m.nc_1p0, m.nc_2p5, m.nc_4p0, m.nc_10p0,
+                printf( "%8.2f" "%8.2f" "%8.2f" "%8.2f" "%8.2f" "%8.2f" "%8.2f" "%8.2f" "%8.2f" "%8.2f\n",
+                       m.mc_1p0, m.mc_2p5, m.mc_4p0, m.mc_10p0,
+                       m.nc_0p5, m.nc_1p0, m.nc_2p5, m.nc_4p0, m.nc_10p0,
                        m.typical_particle_size);
             }
+
             sensirion_sleep_usec(1000000); /* sleep for 1s */
         }
 
