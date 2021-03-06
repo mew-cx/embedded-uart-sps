@@ -87,7 +87,7 @@ int main(void) {
             printf("ERROR (%d) sps30_start_measurement\n", ret);
         }
 
-        for (int i = 0; i < 60; ++i) {
+        for (int i = 0; i < 20; ++i) {
 
             // printf("SEND sps30_read_measurement\n");
             ret = sps30_read_measurement(&m);
