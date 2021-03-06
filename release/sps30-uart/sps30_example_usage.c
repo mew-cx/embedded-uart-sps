@@ -143,6 +143,8 @@ int main(void) {
         }
     }
 
+    sps30_stop_measurement();
+
     if (sensirion_uart_close() != 0)
         printf("failed to close UART\n");
 
