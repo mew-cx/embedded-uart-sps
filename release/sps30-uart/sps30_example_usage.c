@@ -34,6 +34,8 @@
 #include "sensirion_uart.h"
 #include "sps30.h"
 
+#define SLEEP_SECONDS(x) (x * 1000000)
+
 /**
  * TO USE CONSOLE OUTPUT (PRINTF) AND WAIT (SLEEP) PLEASE ADAPT THEM TO YOUR
  * PLATFORM
@@ -45,7 +47,7 @@ int main(void) {
 
     while (sensirion_uart_open() != 0) {
         printf("ERROR sensirion_uart_open\n");
-        sensirion_sleep_usec(1000000); /* sleep for 1s */
+        sensirion_sleep_usec(SLEEP_SECONDS(1));
     }
 
     /* Busy loop for initialization, because the main loop does not work without
@@ -54,7 +56,7 @@ int main(void) {
     printf("SEND sps30_probe\n");
     while (sps30_probe() != 0) {
         printf("ERROR sps30_probe\n");
-        sensirion_sleep_usec(1000000); /* sleep for 1s */
+        sensirion_sleep_usec(SLEEP_SECONDS(1));
     }
 
     struct sps30_version_information version_information;
@@ -107,7 +109,7 @@ int main(void) {
                        m.typical_particle_size);
             }
 
-            sensirion_sleep_usec(1000000); /* sleep for 1s */
+            sensirion_sleep_usec(SLEEP_SECONDS(1));
         }
 
         printf("SEND sps30_stop_measurement\n");
@@ -125,7 +127,7 @@ int main(void) {
         }
 
         printf("sleep for 60 seconds\n");
-        sensirion_sleep_usec(1000000 * 60);
+        sensirion_sleep_usec(SLEEP_SECONDS(60));
 
         if (version_information.firmware_major >= 2) {
             printf("SEND sps30_wake_up\n");
